@@ -16,7 +16,7 @@ pipeline {
         stage('Build') {
             steps {
                 script {
-                    sh "docker build -t ${IMAGE_NAME} ${DIR_PATH}"
+                    bat "docker build -t ${IMAGE_NAME} ${DIR_PATH}"
                 }
             }
         }
@@ -24,7 +24,7 @@ pipeline {
         stage('Run') {
             steps {
                 script {
-                    def output = sh(script: "docker run -d --name ${CONTAINER_NAME} ${IMAGE_NAME}", returnStdout: true).trim()
+                    def output = bat(script: "docker run -d --name ${CONTAINER_NAME} ${IMAGE_NAME}", returnStdout: true).trim()
                     CONTAINER_ID = output
                 }
             }
@@ -41,7 +41,7 @@ pipeline {
                         def arg2 = vars[1]
                         def expectedSum = vars[2].toFloat()
 
-                        def output = sh(script: "docker exec ${CONTAINER_NAME} python /app/sum.py ${arg1} ${arg2}", returnStdout: true).trim()
+                        def output = bat(script: "docker exec ${CONTAINER_NAME} python /app/sum.py ${arg1} ${arg2}", returnStdout: true).trim()
                         def result = output.toFloat()
 
                         if (result == expectedSum) {
@@ -57,8 +57,8 @@ pipeline {
         stage('Clean Up') {
             steps {
                 script {
-                    sh "docker stop ${CONTAINER_NAME}"
-                    sh "docker rm ${CONTAINER_NAME}"
+                    bat "docker stop ${CONTAINER_NAME}"
+                    bat "docker rm ${CONTAINER_NAME}"
                 }
             }
         }
@@ -66,9 +66,9 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
-                    sh "docker login -u ${DOCKERHUB_USER} -p Outerbanks2021"
-                    sh "docker tag ${IMAGE_NAME} ${DOCKERHUB_USER}/${DOCKERHUB_REPO}:latest"
-                    sh "docker push ${DOCKERHUB_USER}/${DOCKERHUB_REPO}:latest"
+                    bat "docker login -u ${DOCKERHUB_USER} -p Outerbanks2021"
+                    bat "docker tag ${IMAGE_NAME} ${DOCKERHUB_USER}/${DOCKERHUB_REPO}:latest"
+                    bat "docker pubat ${DOCKERHUB_USER}/${DOCKERHUB_REPO}:latest"
                 }
             }
         }
@@ -77,8 +77,8 @@ pipeline {
     post {
         always {
             script {
-                sh "docker stop ${CONTAINER_NAME} || true"
-                sh "docker rm ${CONTAINER_NAME} || true"
+                bat "docker stop ${CONTAINER_NAME} || true"
+                bat "docker rm ${CONTAINER_NAME} || true"
             }
         }
     }

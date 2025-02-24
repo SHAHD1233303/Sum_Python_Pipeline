@@ -24,11 +24,11 @@ pipeline {
         stage('Run') {
             steps {
                 script {
-                    def output = bat(script: "docker run -d --name ${CONTAINER_NAME} ${IMAGE_NAME}", returnStdout: true).trim()
-                    CONTAINER_ID = output
+                    bat "docker run -dit --name ${CONTAINER_NAME} ${IMAGE_NAME} tail -f /dev/null"
                 }
             }
         }
+
 
         stage('Test') {
             steps {
